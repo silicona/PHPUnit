@@ -1,0 +1,8 @@
+Usuario:
+    user{1..10}:
+      username: '<username()>'
+      email: '<email()>'
+
+Photo:
+    photo{1..3}:
+        url_photo: '<url()>'

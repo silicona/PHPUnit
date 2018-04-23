@@ -1,0 +1,5 @@
+Review:
+  review{1..10}:
+    __construct: ['<sentence()>', '<paragraph()>']
+    #title: '<sentence()>'
+    #description: '<paragraph()>'

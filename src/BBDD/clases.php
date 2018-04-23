@@ -1,0 +1,30 @@
+<?php
+
+	//namespace App\BBDD;
+	
+	class Usuario {
+
+	    public $id;
+	    public $username;
+	    public $email;
+	    public $photos = Array();
+
+	    public function getPhotos() {
+	        return $this->photos;
+	    }
+	    public function addPhoto(Photo $photo) {
+	        $this->photos[] = $photo;
+	    }
+	    public function addPhotos(array $photos) {
+	        $this->photos = array_merge($this->photos, $photos);
+	    }
+	}
+
+	class Photo {
+	
+	    public $id;
+	    public $user_id;
+	    public $url_photo;
+	}
+
+?>
