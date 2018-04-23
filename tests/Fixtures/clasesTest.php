@@ -22,7 +22,7 @@ class UserTest extends \PHPUnit\Framework\TestCase{
 
         for( $i = 0; $i < 10; $i++ ){
 
-            $this->user->addReview(new Review($this -> faker->sentence, $this -> faker->paragraph));
+            $this->user-> addReview( new Review($this -> faker->sentence, $this -> faker->paragraph) );
 
         }
 
@@ -40,8 +40,26 @@ class UserTest extends \PHPUnit\Framework\TestCase{
             $this -> user -> addReview($review);
 
         }
-
         $this->assertEquals(10, $this->user->countReviews());
+
+    }
+
+    public function testCosa(){
+        $loader = new Nelmio\Alice\Loader\NativeLoader();
+
+        $cosa = $loader -> loadFile(__DIR__.'/cosa.yml');
+
+        $this -> assertTrue( count($cosa) == 1 );
+
+        foreach( $cosa -> getObjects() as $coso ){
+
+            $this -> assertInstanceOf( 'Cosa', $coso  );
+            
+        }
+
+        print_r($cosa);
+
+        //foreach( $cosas -> getObjects() as $cosa ){}
     }
 }
 

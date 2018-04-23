@@ -37,4 +37,27 @@ class Review {
     }
 }
 
+class Cosa {
+
+    public $id;
+    public $nombre;
+    public $email;
+    public $medallas;
+    public $anexo;
+    public $usuario;
+    public $favoriteNumber;
+    public $fullname;
+    public $birthDate;
+    public $friends;
+
+    // public function __construct($nombre){
+    //     $this -> nombre = $nombre;
+    // }
+
+    public function getEmail($email) {
+
+        $this -> email = $email;
+    }
+}
+
 ?>

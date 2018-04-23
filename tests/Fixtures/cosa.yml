@@ -1,0 +1,55 @@
+# https://github.com/nelmio/alice/blob/master/doc/complete-reference.md
+
+parameters:
+  foo: 'bar'
+
+Cosa:
+  cosa{1..5}:
+    __construct: false # Alice no ejecuta __construct
+    id: '<current()>'
+    usuario (unique): '<username()>'   # nombre de usuario unico
+    nombre: '<name()>'
+    email: '<email()>'
+    medallas: ['plata', 'bronce', 'bronce']
+    anexo: '<{foo}>'
+    favoriteNumber: '80%? <numberBetween(1, 200)>'  # Now only 80% chances for have a number filled-in.
+    fullname: '<firstName()> <lastName()>'
+    birthDate: '<date_create()>'
+    #friends (unique): '@friends*' # array value - ¿?
+
+# Nelmio\Entity\User:
+#     user1:
+#         username: '<username()>'
+#         __calls:
+#             - setLocation: [40.689269, -74.044737]
+
+# Method arguments with flags
+
+# You can specify a flag on a specific argument like so:
+
+# Nelmio\Entity\User:
+#     user{1..10}:
+#         username: '<username()>'
+#         __calls:
+#             - setLocation:
+#                 0 (unique): '<latitude()>'
+#                 1 (unique): '<longitude()>'
+
+# Method arguments with parameters
+
+# parameters:
+#     foo: bar
+
+# Nelmio\Entity\Dummy:
+#     dummy{1..10}:
+#         __calls:
+#             - setLocation:
+#                 arg0: '<{foo}>'
+#                 arg1: '$arg0' # will be resolved info 'bar'
+#                 3: 500  # the numerical key here is just a random number as in YAML you cannot mix keys with array values
+#                 4: '$3' # `3` here refers to the *third* argument, i.e. 500
+
+# Nelmio\Entity\User:
+#     user{1..10}:
+#         __construct:
+#             0 (unique): '<username()>'
