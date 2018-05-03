@@ -18,7 +18,7 @@
 
 			$sql = 'SELECT count(codigo) FROM ' . $tabla;
 
-			$res = mysqli_query( $this -> link, $sql );
+			$res = \mysqli_query( $this -> link, $sql );
 
 			return (int) mysqli_fetch_row( $res )[0];
 

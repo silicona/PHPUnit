@@ -7,8 +7,8 @@
     <testsuites>
         <testsuite name="XStrings Test Suite">
             <!-- <directory>tests/</directory> -->
-            <!-- <directory>tests/XString/</directory> -->
-            <directory>tests/Fixtures/</directory>
+            <directory>tests/XString/</directory>
+            <!-- <directory>tests/Fixtures/</directory> -->
         </testsuite>
     </testsuites>
 

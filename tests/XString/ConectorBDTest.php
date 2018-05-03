@@ -8,9 +8,9 @@ class ConectorBDTest extends \PHPUnit\Framework\TestCase{
 		// Variables para setUp NO son static
     protected static $conectorBD;
 
-    protected static $host_test = 'localhost';
-    protected static $user_test = 'shilum';
-    protected static $pass_test = 'shilum';
+    protected static $host_test = '127.0.0.1';
+    protected static $user_test = 'root';
+    protected static $pass_test = '';
     protected static $db_test 	 = 'videoclub';
 
     public static function setUpBeforeClass(){

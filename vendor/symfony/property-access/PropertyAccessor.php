@@ -13,15 +13,14 @@ namespace Symfony\Component\PropertyAccess;
 
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\NullAdapter;
 use Symfony\Component\Inflector\Inflector;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\Exception\InvalidArgumentException;
-use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
+use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 
 /**
@@ -122,6 +121,10 @@ class PropertyAccessor implements PropertyAccessorInterface
      * @var bool
      */
     private $magicCall;
+
+    /**
+     * @var bool
+     */
     private $ignoreInvalidIndices;
 
     /**
@@ -129,13 +132,23 @@ class PropertyAccessor implements PropertyAccessorInterface
      */
     private $cacheItemPool;
 
+    /**
+     * @var array
+     */
     private $readPropertyCache = array();
-    private $writePropertyCache = array();
-    private $propertyPathCache = array();
 
+    /**
+     * @var array
+     */
+    private $writePropertyCache = array();
     private static $previousErrorHandler = false;
     private static $errorHandler = array(__CLASS__, 'handleError');
     private static $resultProto = array(self::VALUE => null);
+
+    /**
+     * @var array
+     */
+    private $propertyPathCache = array();
 
     /**
      * Should not be used by application code. Use
@@ -245,7 +258,7 @@ class PropertyAccessor implements PropertyAccessorInterface
     /**
      * @internal
      */
-    public static function handleError($type, $message, $file, $line, $context = array())
+    public static function handleError($type, $message, $file, $line, $context)
     {
         if (E_RECOVERABLE_ERROR === $type) {
             self::throwInvalidArgumentException($message, debug_backtrace(false), 1);
@@ -339,7 +352,7 @@ class PropertyAccessor implements PropertyAccessorInterface
      *
      * @return array The values read in the path
      *
-     * @throws UnexpectedTypeException if a value within the path is neither object nor array
+     * @throws UnexpectedTypeException If a value within the path is neither object nor array.
      * @throws NoSuchIndexException    If a non-existing index is accessed
      */
     private function readPropertiesUntil($zval, PropertyPathInterface $propertyPath, $lastIndex, $ignoreInvalidIndices = true)
@@ -457,12 +470,12 @@ class PropertyAccessor implements PropertyAccessorInterface
      *
      * @return array The array containing the value of the property
      *
-     * @throws NoSuchPropertyException if the property does not exist or is not public
+     * @throws NoSuchPropertyException If the property does not exist or is not public.
      */
     private function readProperty($zval, $property)
     {
         if (!is_object($zval[self::VALUE])) {
-            throw new NoSuchPropertyException(sprintf('Cannot read property "%s" from an array. Maybe you intended to write the property path as "[%1$s]" instead.', $property));
+            throw new NoSuchPropertyException(sprintf('Cannot read property "%s" from an array. Maybe you intended to write the property path as "[%s]" instead.', $property, $property));
         }
 
         $result = self::$resultProto;
@@ -608,12 +621,12 @@ class PropertyAccessor implements PropertyAccessorInterface
      * @param string $property The property to write
      * @param mixed  $value    The value to write
      *
-     * @throws NoSuchPropertyException if the property does not exist or is not public
+     * @throws NoSuchPropertyException If the property does not exist or is not public.
      */
     private function writeProperty($zval, $property, $value)
     {
         if (!is_object($zval[self::VALUE])) {
-            throw new NoSuchPropertyException(sprintf('Cannot write property "%s" to an array. Maybe you should write the property path as "[%1$s]" instead?', $property));
+            throw new NoSuchPropertyException(sprintf('Cannot write property "%s" to an array. Maybe you should write the property path as "[%s]" instead?', $property, $property));
         }
 
         $object = $zval[self::VALUE];
@@ -636,7 +649,7 @@ class PropertyAccessor implements PropertyAccessorInterface
         } elseif (self::ACCESS_TYPE_MAGIC === $access[self::ACCESS_TYPE]) {
             $object->{$access[self::ACCESS_NAME]}($value);
         } elseif (self::ACCESS_TYPE_NOT_FOUND === $access[self::ACCESS_TYPE]) {
-            throw new NoSuchPropertyException(sprintf('Could not determine access type for property "%s" in class "%s".', $property, get_class($object)));
+            throw new NoSuchPropertyException(sprintf('Could not determine access type for property "%s".', $property));
         } else {
             throw new NoSuchPropertyException($access[self::ACCESS_NAME]);
         }
@@ -645,11 +658,11 @@ class PropertyAccessor implements PropertyAccessorInterface
     /**
      * Adjusts a collection-valued property by calling add*() and remove*() methods.
      *
-     * @param array    $zval         The array containing the object to write to
-     * @param string   $property     The property to write
-     * @param iterable $collection   The collection to write
-     * @param string   $addMethod    The add*() method
-     * @param string   $removeMethod The remove*() method
+     * @param array              $zval         The array containing the object to write to
+     * @param string             $property     The property to write
+     * @param array|\Traversable $collection   The collection to write
+     * @param string             $addMethod    The add*() method
+     * @param string             $removeMethod The remove*() method
      */
     private function writeCollection($zval, $property, $collection, $addMethod, $removeMethod)
     {
@@ -915,9 +928,7 @@ class PropertyAccessor implements PropertyAccessorInterface
         }
 
         $apcu = new ApcuAdapter($namespace, $defaultLifetime / 5, $version);
-        if ('cli' === \PHP_SAPI && !ini_get('apc.enable_cli')) {
-            $apcu->setLogger(new NullLogger());
-        } elseif (null !== $logger) {
+        if (null !== $logger) {
             $apcu->setLogger($logger);
         }
 
